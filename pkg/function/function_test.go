@@ -17,6 +17,8 @@
 package function
 
 import (
+	"github.com/cectc/dbpack/third_party/parser/mysql"
+	"github.com/cectc/dbpack/third_party/parser/types"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -53,4 +55,37 @@ func buildMathOperationExpr() *ast.BinaryOperationExpr {
 	sel, _ := stmt.(*ast.SelectStmt)
 
 	return sel.Where.(*ast.BinaryOperationExpr).R.(*ast.BinaryOperationExpr)
+}
+
+func TestEvalCaseWhenFunction(t *testing.T) {
+	t.Parallel()
+
+	testcases := map[string]struct {
+		ftp            byte
+		flen, fdecimal int
+		wantRes        interface{}
+		wantErr        string
+	}{
+		"success": {
+			ftp:      mysql.TypeFloat,
+			flen:     12,
+			fdecimal: 3,
+		},
+	}
+
+	for name, tt := range testcases {
+		name := name
+		tt := tt
+
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			var exNode ast.ExprNode
+			ft := types.NewFieldType(tt.ftp)
+			ft.Flen = tt.flen
+			ft.Decimal = tt.fdecimal
+			exNode.SetType(ft)
+			//exNode.SetFlag(ast.FlagHasAggregateFunc)
+		})
+	}
 }
